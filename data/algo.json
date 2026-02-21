@@ -3,125 +3,227 @@
   "blocks": [
     {
       "type": "ejercicios",
-      "title": "Módulo 1: Problemas Clásicos y Persistencia (CRUD y Files)",
-      "description": "Enfoque: Manipulación de flujos de datos (fstream) y gestión de memoria en contenedores.",
+      "title": "Módulo 1: Problemas Clásicos y Persistencia (Archivos y Estructuras de Datos)",
+      "description": "Enfoque: Manipulación precisa de flujos de datos (fstream), tokenización de strings y gestión de sincronización entre memoria dinámica y disco.",
       "items": [
-        { "type": "concepto", "content": "Asegurar el manejo de memoria mediante contenedores estándar antes de persistir datos." },
-        { "type": "ejercicio", "title": "Parser de CSV Manual", "content": "Lectura de un archivo .csv y tokenización mediante stringstream." },
-        { "type": "ejercicio", "title": "Escritura en Modo Append", "content": "Registro de logs de errores con marcas de tiempo en archivos de texto." },
-        { "type": "ejercicio", "title": "CRUD de Inventario", "content": "Creación, lectura, actualización y eliminación de registros en un std::vector<Base*>." },
-        { "type": "ejercicio", "title": "Serialización Binaria", "content": "Guardar y cargar el estado de un arreglo de objetos en formato binario (ios::binary)." },
-        { "type": "ejercicio", "title": "Buscador por Atributo", "content": "Implementación de búsqueda lineal sobre archivos para filtrar registros por criterios específicos." },
-        { "type": "ejercicio", "title": "Validador de Tipos", "content": "Función para verificar la integridad de datos leídos (conversión segura con stoi/stod)." },
-        { "type": "ejercicio", "title": "Filtro de Datos Dinámico", "content": "Exportación de subconjuntos de datos a nuevos archivos basados en condiciones lógicas." },
-        { "type": "ejercicio", "title": "Gestión de Índices", "content": "Creación de un archivo de índices para acceso rápido a registros en archivos grandes." },
-        { "type": "ejercicio", "title": "Reporte Estadístico", "content": "Lectura de datos numéricos y generación de un archivo de resumen (promedios, máximos, mínimos)." },
-        { "type": "ejercicio", "title": "Formateo de Salida", "content": "Uso de manipuladores de flujo (setw, fixed, setprecision) para reportes en consola." },
-        { "type": "ejercicio", "title": "Sincronización de Vectores", "content": "Actualizar un archivo de texto cada vez que el vector en memoria sufra cambios." },
-        { "type": "ejercicio", "title": "Carga de Configuración", "content": "Leer parámetros de ejecución (ancho de ventana, límites) desde un archivo .txt." },
-        { "type": "ejercicio", "title": "Contador de Frecuencias", "content": "Leer un texto y contar ocurrencias de palabras clave, guardando el resultado." },
-        { "type": "ejercicio", "title": "Merging de Archivos", "content": "Combinar dos archivos ordenados en un tercer archivo manteniendo el orden." },
-        { "type": "ejercicio", "title": "Backup Automático", "content": "Función que copia el contenido de la base de datos a un archivo .bak." },
-        { "type": "ejercicio", "title": "Limpieza de Datos", "content": "Script para eliminar líneas vacías o corruptas de un archivo de entrada." },
-        { "type": "ejercicio", "title": "Cifrado César Básico", "content": "Lectura de archivo, desplazamiento de caracteres y escritura de archivo cifrado." },
-        { "type": "ejercicio", "title": "Paginación en Consola", "content": "Leer un archivo y mostrarlo al usuario en bloques de 10 registros." },
-        { "type": "ejercicio", "title": "Conversor de Formatos", "content": "Leer un archivo de texto plano y convertirlo a un formato con delimitadores específicos." },
-        { "type": "ejercicio", "title": "Gestor de Sesiones", "content": "Guardar el último estado de una simulación para reanudarla en la próxima ejecución." }
+        {
+          "type": "concepto",
+          "content": "Asegurar la consistencia del estado en memoria (contenedores) antes de delegar la escritura a disco. Los archivos son solo un reflejo del estado del programa."
+        },
+        {
+          "type": "ejercicio",
+          "title": "1. Parser CSV Seguro con Reporte de Errores",
+          "content": "Escribe un programa que lea 'usuarios.csv' (ID, Nombre, Saldo). Usa `std::stringstream` para separar campos y `std::stod` para el saldo. Si una línea tiene un formato inválido (ej. letras en lugar de números), ignórala en memoria pero escríbela inmediatamente en un archivo 'errores.log' abriéndolo en modo `std::ios::app`."
+        },
+        {
+          "type": "ejercicio",
+          "title": "2. CRUD Sincronizado en Memoria y Disco",
+          "content": "Crea un sistema que cargue 'inventario.txt' en un `std::vector<Item*>`. Implementa funciones para agregar, modificar y eliminar por ID en el vector. Crea una función `sincronizar()` que sobrescriba el archivo de texto completo (`std::ios::out` puro) para reflejar los cambios exactos del vector."
+        },
+        {
+          "type": "ejercicio",
+          "title": "3. Filtro y Exportación Dinámica",
+          "content": "Escribe una función que reciba un vector de objetos `Transaccion` cargados previamente. El programa debe iterar el vector y exportar a un nuevo archivo 'transacciones_altas.csv' únicamente aquellas cuyo monto supere los 10,000. Usa los manipuladores `std::fixed` y `std::setprecision(2)` para formatear la salida."
+        },
+        {
+          "type": "ejercicio",
+          "title": "4. Serialización Binaria de Estructuras Planas",
+          "content": "Escribe un programa que guarde un array estático de structs `Configuracion` directamente en 'config.bin' usando el método `write()` y el flag `std::ios::binary`. Luego, crea una función para recuperarlos con `read()`. (Explicación durante la resolución: Por qué esto es extremadamente rápido pero catastrófico si el struct contiene punteros)."
+        },
+        {
+          "type": "ejercicio",
+          "title": "5. Búsqueda con Saltos (Indexación Básica)",
+          "content": "Escribe un programa que analice un archivo grande 'diccionario.txt'. Primero, guarda en un `std::vector<std::streampos>` la posición (usando `tellg()`) donde empieza cada letra del abecedario. Luego, pide al usuario una letra y usa `seekg()` para saltar directamente a ese bloque y mostrar las siguientes 5 palabras, evitando leer todo el archivo."
+        },
+        {
+          "type": "ejercicio",
+          "title": "6. Merge de Logs Secuenciales",
+          "content": "Tienes dos archivos 'log_A.txt' y 'log_B.txt', ambos ordenados por fecha. Escribe un programa que abra ambos flujos simultáneamente, compare línea por línea y escriba en 'log_global.txt' de forma cronológica estricta sin cargar la totalidad de los archivos en arreglos de memoria."
+        },
+        {
+          "type": "ejercicio",
+          "title": "7. Gestor de Checkpoints (Sesiones)",
+          "content": "Escribe un programa interactivo de consola. Al iniciar, intenta abrir 'savegame.dat'. Si existe, carga las coordenadas X,Y del jugador. Permite al usuario modificar las coordenadas ingresando comandos. Al ingresar 'EXIT', guarda el estado exacto de las variables de nuevo en el archivo para la próxima ejecución."
+        },
+        {
+          "type": "ejercicio",
+          "title": "8. Limpiador de Datos Corruptos (Trim)",
+          "content": "Escribe una función que procese un archivo 'data_sucia.txt'. La función debe leer línea por línea, eliminar los espacios en blanco sobrantes al inicio y final de la cadena de texto, ignorar las líneas que queden completamente vacías y guardar el resultado inmaculado en 'data_limpia.txt'."
+        },
+        {
+          "type": "ejercicio",
+          "title": "9. Análisis de Frecuencias en Texto",
+          "content": "Escribe un programa que lea todo el contenido de 'libro.txt', cuente exactamente cuántas veces aparece una palabra clave introducida por el usuario (ignorando mayúsculas/minúsculas) y anexe el resultado al final de un archivo 'metricas.txt' junto con un timestamp manual."
+        },
+        {
+          "type": "ejercicio",
+          "title": "10. Conversor de Delimitadores Estricto",
+          "content": "Escribe un programa que lea un archivo separado por tabulaciones (TSV) y genere un nuevo archivo separado por barras verticales (Pipes `|`). Durante el proceso, debe validar que cada fila tenga exactamente 4 columnas; si una fila tiene menos, se descarta."
+        }
       ]
     },
     {
       "type": "ejercicios",
-      "title": "Módulo 2: Pensamiento Abstracto y Diseño Top-Down",
-      "description": "Enfoque: Modelado de sistemas y descomposición funcional.",
+      "title": "Módulo 2: Pensamiento Abstracto, Modularidad y Diseño Top-Down",
+      "description": "Enfoque: Descomposición funcional de sistemas. Separación de responsabilidades, flujos de control aislados e interfaces limpias antes de codificar la lógica interna.",
       "items": [
-        { "type": "alerta", "content": "El diseño de la arquitectura (header files e interfaces) debe preceder siempre a la implementación funcional." },
-        { "type": "ejercicio", "title": "Modelado de un ATM", "content": "Identificación de estados y transiciones antes de definir clases." },
-        { "type": "ejercicio", "title": "Diagrama de Flujo de una Simulación", "content": "Trazado manual de la lógica de colisiones en un entorno 2D." },
-        { "type": "ejercicio", "title": "Descomposición de un E-commerce", "content": "Dividir el sistema en Carrito, Inventario y Pasarela de Pagos." },
-        { "type": "ejercicio", "title": "Jerarquía de Menús", "content": "Diseño de una interfaz de consola anidada usando estructuras de control." },
-        { "type": "ejercicio", "title": "Definición de Invariantes", "content": "Identificación de reglas de negocio que nunca deben romperse en el código." },
-        { "type": "ejercicio", "title": "Abstracción de un Personaje", "content": "Diferenciar entre atributos visuales y atributos lógicos de juego." },
-        { "type": "ejercicio", "title": "Diseño de Protocolo", "content": "Definir cómo se comunicarán dos módulos independientes mediante parámetros." },
-        { "type": "ejercicio", "title": "Mapa de Responsabilidades", "content": "Asignación de tareas únicas a funciones específicas (Single Responsibility Principle)." },
-        { "type": "ejercicio", "title": "Modelado de Tráfico", "content": "Abstracción de vehículos como puntos con vectores de velocidad y posición." },
-        { "type": "ejercicio", "title": "Planificación de Casos de Prueba", "content": "Diseñar los Edge Cases antes de escribir el algoritmo principal." },
-        { "type": "ejercicio", "title": "Diagrama de Secuencia Manual", "content": "Rastrear el camino de un dato desde la entrada hasta el archivo." },
-        { "type": "ejercicio", "title": "Jerarquía de Tipos", "content": "Decidir qué atributos van en una Clase Base y cuáles en las Derivadas." },
-        { "type": "ejercicio", "title": "Modularización de Cálculos", "content": "Separar la lógica matemática de la lógica de entrada/salida." },
-        { "type": "ejercicio", "title": "Máquina de Estados Simple", "content": "Modelado de un semáforo o controlador de acceso." },
-        { "type": "ejercicio", "title": "Análisis de Escalabilidad", "content": "Pensar cómo agregar un nuevo tipo de usuario sin modificar el main." },
-        { "type": "ejercicio", "title": "Prototipado de Interfaces", "content": "Escribir las firmas de las funciones (header files) antes de los cuerpos." },
-        { "type": "ejercicio", "title": "Identificación de Dependencias", "content": "Determinar qué módulos necesitan a otros para existir." },
-        { "type": "ejercicio", "title": "Abstracción de un Sistema de Archivos", "content": "Modelar Carpetas y Archivos como entidades relacionadas." },
-        { "type": "ejercicio", "title": "Diseño de una Cola de Tareas", "content": "Abstracción de procesos pendientes de ejecución." },
-        { "type": "ejercicio", "title": "Refactorización Teórica", "content": "Tomar un código espagueti y rediseñarlo en papel usando POO." }
+        {
+          "type": "alerta",
+          "content": "El diseño de la arquitectura y las firmas de las clases (Header files) deben trazarse mentalmente o en papel antes de implementar la primera línea lógica. La separación del 'qué hace' vs 'cómo lo hace' es no negociable."
+        },
+        {
+          "type": "ejercicio",
+          "title": "1. Grafo de Navegación por Consola",
+          "content": "Escribe un programa con una clase `NodoLugar` que contenga un nombre y un `std::vector<NodoLugar*> conexiones`. Modela 4 habitaciones conectadas entre sí. Escribe un bucle donde el usuario vea las conexiones disponibles y elija a qué nodo saltar. (Propósito: Entender referencias cruzadas y la base del pathfinding)."
+        },
+        {
+          "type": "ejercicio",
+          "title": "2. Separación UI vs Lógica Core",
+          "content": "Diseña una clase `MotorCalculo` que reciba vectores matemáticos, realice operaciones complejas y retorne resultados puramente numéricos. Luego, crea una clase `ConsolaInput` que gestione los `cin` y `cout`. (Propósito: Inversión de control y bajo acoplamiento; demostrar que la lógica no debe depender de cómo se imprimen las cosas)."
+        },
+        {
+          "type": "ejercicio",
+          "title": "3. Invariantes Clásicos: Cuenta Bancaria Segura",
+          "content": "Escribe una clase `CuentaFinanciera` donde el atributo `saldo` sea estrictamente privado. Implementa métodos `retirar` y `depositar` que retornen un booleano `false` si la operación rompería la regla inquebrantable (invariante) de que el saldo jamás puede ser menor a cero. Protege el estado del sistema."
+        },
+        {
+          "type": "ejercicio",
+          "title": "4. Game Loop Básico y Máquina de Estados",
+          "content": "Modela el ciclo de vida de un semáforo. Define un `enum class Estado { ROJO, AMARILLO, VERDE }`. Escribe un bucle infinito (Game Loop) que llame a una función `update()` que cambie de estado basado en un contador de iteraciones, simulando el paso del tiempo de forma determinista."
+        },
+        {
+          "type": "ejercicio",
+          "title": "5. Abstracción Estructural (File System)",
+          "content": "Plantea los archivos `.h` (solo declaraciones) para simular un disco duro virtual. Crea una clase abstracta `NodoSistema`, y haz que hereden `Directorio` (que contiene recursivamente un vector de `NodoSistema*`) y `ArchivoPlano`. Escribe la firma del método polimórfico `calcularTamanioTotal()`."
+        },
+        {
+          "type": "ejercicio",
+          "title": "6. Descomposición de Responsabilidades en E-Commerce",
+          "content": "Diseña un flujo donde existan las clases `Carrito`, `InventarioCentral` y `ProcesadorPagos`. Escribe un programa donde al ejecutar `Carrito::comprar()`, este delegue la validación de fondos al procesador y la reducción de stock al inventario, sin tocar esas variables directamente."
+        },
+        {
+          "type": "ejercicio",
+          "title": "7. Sistema de Cola de Tareas (Event Queue)",
+          "content": "Escribe una clase `ProcesadorLotes` que contenga un `std::vector<string>` simulando tareas pendientes. Implementa un método `encolar()` y un método `ejecutarSiguiente()` que procese e imprima la tarea más antigua y la borre del vector. Modela el flujo asíncrono."
+        },
+        {
+          "type": "ejercicio",
+          "title": "8. Modelado Físico Abstracto (Partículas)",
+          "content": "Abstrae el concepto de un objeto en movimiento. Crea un `struct Vector2D`. Diseña la clase `Particula` con propiedades físicas puras: posición, velocidad y aceleración. Implementa el método `step(float tiempoDelta)` que actualice la posición usando matemática simple, totalmente desacoplado de su renderizado gráfico."
+        }
       ]
     },
     {
       "type": "ejercicios",
-      "title": "Módulo 3: POO y Composición Estratégica",
-      "description": "Enfoque: Relaciones de propiedad y encapsulamiento para agilidad.",
+      "title": "Módulo 3: POO, Polimorfismo y Jerarquías Estratégicas",
+      "description": "Enfoque: Establecer relaciones precisas de ciclo de vida (Composición vs Agregación), uso del encapsulamiento estricto y abstracción polimórfica para diseñar sistemas modulares y extensibles.",
       "items": [
-        { "type": "concepto", "content": "La jerarquía de herencia debe modelar relaciones 'es-un', mientras que la composición define relaciones 'tiene-un'." },
-        { "type": "ejercicio", "title": "Composición de un Motor", "content": "Clase Motor dentro de clase Auto (relación de vida estricta)." },
-        { "type": "ejercicio", "title": "Agregación de Estudiantes", "content": "Clase Aula que contiene punteros a objetos Estudiante." },
-        { "type": "ejercicio", "title": "Lista de Punteros Polimórficos", "content": "Manejo de un vector<Figura*> para invocar métodos virtuales." },
-        { "type": "ejercicio", "title": "Uso de Getters/Setters Protegidos", "content": "Controlar el acceso a datos sensibles en jerarquías de herencia." },
-        { "type": "ejercicio", "title": "Constructor de Delegación", "content": "Llamar a un constructor desde otro para evitar redundancia." },
-        { "type": "ejercicio", "title": "Clases Abstractas para Interfaces", "content": "Definición de una base Entidad con método puro actualizar()." },
-        { "type": "ejercicio", "title": "Sobrecarga del Operador <<", "content": "Facilitar la impresión de objetos complejos en archivos o consola." },
-        { "type": "ejercicio", "title": "Destructores Virtuales", "content": "Implementación obligatoria para evitar fugas de memoria en polimorfismo." },
-        { "type": "ejercicio", "title": "Clase Manager", "content": "Creación de una clase controladora que orqueste la relación entre todas las demás." },
-        { "type": "ejercicio", "title": "Herencia Múltiple Controlada", "content": "Implementación de mixins para agregar funcionalidades específicas." },
-        { "type": "ejercicio", "title": "Objetos Const", "content": "Uso de const en métodos que no modifican el estado del objeto." },
-        { "type": "ejercicio", "title": "Pasaje por Referencia de Objetos", "content": "Optimización de rendimiento evitando copias innecesarias." },
-        { "type": "ejercicio", "title": "Composición de UI", "content": "Una clase Ventana compuesta por múltiples objetos Boton." },
-        { "type": "ejercicio", "title": "Encapsulamiento de Lógica de Archivos", "content": "Una clase Database que oculte los detalles de fstream." },
-        { "type": "ejercicio", "title": "Relación Unidireccional vs Bidireccional", "content": "Implementar vínculos entre objetos Padre e Hijo." },
-        { "type": "ejercicio", "title": "Inicialización Dinámica en el Constructor", "content": "Uso de new dentro del constructor y delete en el destructor." },
-        { "type": "ejercicio", "title": "Clase Punto y Línea", "content": "Composición clásica para geometría computacional." },
-        { "type": "ejercicio", "title": "Sobrecarga de Comparadores", "content": "Permitir que objetos personalizados se ordenen en un std::vector." },
-        { "type": "ejercicio", "title": "Uso de friend", "content": "Permitir acceso controlado a funciones externas de visualización." },
-        { "type": "ejercicio", "title": "Modelado de un Zoo", "content": "Herencia de Animal -> Mamifero -> Perro con métodos virtuales específicos." }
+        {
+          "type": "concepto",
+          "content": "La herencia se usa estrictamente para relaciones 'es-un', pero la composición ('tiene-un') suele ser más flexible y menos propensa a diseños rígidos. Todo uso de polimorfismo exige destructores virtuales."
+        },
+        {
+          "type": "ejercicio",
+          "title": "1. Ciclos de Vida: Composición vs Agregación",
+          "content": "Escribe un programa que contraste ambos conceptos. Crea una clase `Jugador` que instancie dinámicamente un objeto `Cerebro` en su constructor (Composición, se destruye con el jugador). A la vez, el `Jugador` recibe un puntero a un objeto `Arma` externo creado en el `main` (Agregación, sobrevive al jugador). Maneja correctamente la memoria."
+        },
+        {
+          "type": "ejercicio",
+          "title": "2. Ejecución Polimórfica Ciega",
+          "content": "Define una clase abstracta `EntidadEnemiga` con el método virtual puro `ejecutarAtaque()`. Crea derivadas `Zombie` y `Mago`. En el `main`, declara un `std::vector<EntidadEnemiga*>` y llénalo con ambas clases. Itéralo ciegamente llamando a `ejecutarAtaque()` para demostrar la ligadura dinámica en tiempo de ejecución."
+        },
+        {
+          "type": "ejercicio",
+          "title": "3. Herencia y Protección de Memoria (Destructores)",
+          "content": "Escribe un sistema donde una clase derivada asigne memoria dinámica usando `new` en su propio constructor. Demuestra escribiendo el código cómo el programa generará un Memory Leak al eliminarla desde un puntero de clase base, a menos que declares el destructor de la base como `virtual`."
+        },
+        {
+          "type": "ejercicio",
+          "title": "4. Sobrecarga del Operador << para Logs",
+          "content": "Crea una clase compleja `CoordenadaGPS` (latitud, longitud, altitud). Sobrecarga el operador `operator<<` para que puedas hacer directamente `cout << miCoordenada;` o `archivoLog << miCoordenada;`, facilitando inmensamente el volcado de datos."
+        },
+        {
+          "type": "ejercicio",
+          "title": "5. Delegación de Constructores y Valores Constantes",
+          "content": "Diseña una clase `Poligono`. Escribe un constructor maestro que reciba todos los parámetros. Escribe constructores secundarios que llamen explícitamente a este constructor maestro para evitar repetir código de inicialización. Asegura que los métodos de lectura tengan el sufijo `const`."
+        },
+        {
+          "type": "ejercicio",
+          "title": "6. Interfaz de Inversión de Dependencias (Logger)",
+          "content": "Crea una clase puramente abstracta `IReporter`. Haz que `ReporteConsola` y `ReporteArchivo` hereden de ella. Obliga a una clase de alto nivel `Simulador` a recibir un puntero a `IReporter` y enviar su estado allí. El Simulador jamás debe saber dónde o cómo se está imprimiendo la información."
+        },
+        {
+          "type": "ejercicio",
+          "title": "7. Control de Acceso con protected y friend",
+          "content": "Escribe una jerarquía donde la clase `VehiculoTerrestre` tenga la variable protegida `combustible`. Haz que su derivada `Auto` modifique el combustible al acelerar. Luego, declara una función global `revisarMotor()` como `friend` de Auto para que pueda acceder directamente a sus componentes privados sin usar getters."
+        },
+        {
+          "type": "ejercicio",
+          "title": "8. Manager Centralizado (Patrón Orquestador)",
+          "content": "Diseña una clase superior `ControladorJuego` que tenga bajo su control compositivo arreglos de `Enemigos` y de `Items`. Implementa un método central `resolverColisiones()` que determine matemáticamente la interacción cruzada entre ambas listas, actuando como la autoridad del modelo."
+        }
       ]
     },
     {
       "type": "ejercicios",
-      "title": "Módulo 4: Recursividad y Pensamiento Lógico",
-      "description": "Enfoque: Resolución de problemas mediante inducción y división.",
+      "title": "Módulo 4: Recursividad Estructural y Lógica Fractal",
+      "description": "Enfoque: Reducción de estados, manejo del Call Stack, resolución top-down algorítmica y condiciones de parada absolutas.",
       "items": [
-        { "type": "alerta", "content": "Toda función recursiva requiere un caso base explícito para evitar desbordamiento del Stack (Stack Overflow)." },
-        { "type": "ejercicio", "title": "Factorial e Inducción", "content": "El 'Hello World' de la recursión para entender el Stack." },
-        { "type": "ejercicio", "title": "Fibonacci Optimizado", "content": "Comparativa entre recursión simple y necesidad de memoización." },
-        { "type": "ejercicio", "title": "Búsqueda Binaria Recursiva", "content": "Implementación sobre arreglos ordenados." },
-        { "type": "ejercicio", "title": "Recorrido de Directorios", "content": "Función recursiva para listar archivos en carpetas anidadas." },
-        { "type": "ejercicio", "title": "Torres de Hanoi", "content": "El problema clásico de transferencia de estados." },
-        { "type": "ejercicio", "title": "Suma de Elementos", "content": "Sumar un vector dividiéndolo en mitades." },
-        { "type": "ejercicio", "title": "Palíndromos", "content": "Verificación recursiva de cadenas de caracteres." },
-        { "type": "ejercicio", "title": "Máximo Común Divisor (Euclides)", "content": "Implementación elegante del algoritmo." },
-        { "type": "ejercicio", "title": "Inversión de Cadenas", "content": "Imprimir un string al revés usando la pila de llamadas." },
-        { "type": "ejercicio", "title": "Conteo de Dígitos", "content": "Contar cuántas veces aparece un dígito en un número de forma recursiva." },
-        { "type": "ejercicio", "title": "Potencia de un Número", "content": "Implementación de base elevada a un exponente mediante recursión." },
-        { "type": "ejercicio", "title": "Flood Fill", "content": "Algoritmo básico para llenar áreas (útil en simulaciones)." },
-        { "type": "ejercicio", "title": "Generación de Permutaciones", "content": "Listar todas las combinaciones posibles de un conjunto." },
-        { "type": "ejercicio", "title": "Check de Ordenamiento", "content": "Función booleana que verifica si un vector está ordenado." },
-        { "type": "ejercicio", "title": "Suma de Dígitos", "content": "Reducir un número a la suma de sus componentes." },
-        { "type": "ejercicio", "title": "Cruce de Laberinto (Backtracking)", "content": "Encontrar la salida en una matriz de enteros." },
-        { "type": "ejercicio", "title": "Conversión a Binario", "content": "Transformar decimales a binario mediante divisiones sucesivas." },
-        { "type": "ejercicio", "title": "Mínimo de un Vector", "content": "Encontrar el menor elemento recursivamente." },
-        { "type": "ejercicio", "title": "Cálculo de Caminos", "content": "Encontrar cuántas formas hay de llegar a un punto en una grilla." },
-        { "type": "ejercicio", "title": "Estructuras Recursivas", "content": "Introducción conceptual a nodos de listas enlazadas." }
+        {
+          "type": "alerta",
+          "content": "La recursión no es solo un ciclo oculto; es delegar el sub-problema al entorno abstracto. El diseño riguroso del 'Caso Base' evita el desbordamiento destructivo de la memoria Stack."
+        },
+        {
+          "type": "ejercicio",
+          "title": "1. Flood Fill Puro en Grilla (Simulación de Derrame)",
+          "content": "Escribe un programa que cree una matriz de 5x5 llena de '0'. Solicita al usuario una coordenada de inicio. Crea una función recursiva que reemplace el '0' por un '1', y se llame a sí misma en las 4 direcciones cardinales deteniéndose lógicamente si encuentra los bordes o un elemento que ya es '1'."
+        },
+        {
+          "type": "ejercicio",
+          "title": "2. Suma Dinámica de Divide y Vencerás",
+          "content": "Implementa una función recursiva que reciba un arreglo de números y dos índices (inicio y fin). En lugar de iterar linealmente, la función debe partir conceptualmente el arreglo por la mitad, sumando la respuesta recursiva de la mitad izquierda con la derecha, uniendo las ramas en el retorno."
+        },
+        {
+          "type": "ejercicio",
+          "title": "3. Inversión In Situ Mediante Pila (Call Stack)",
+          "content": "Escribe una función que reciba un `std::string` por valor y un índice. La función debe llamarse a sí misma incrementando el índice, y solo realizar el `std::cout` del caracter actual *después* de que regrese la llamada recursiva. Analiza cómo la pila mantiene temporalmente el estado."
+        },
+        {
+          "type": "ejercicio",
+          "title": "4. Verificador de Palíndromos Algorítmico",
+          "content": "Escribe una función recursiva `bool esPalindromo(const string& str, int i, int j)`. La función debe comparar los bordes actuales y, si son iguales, reducir el problema evaluando `(i+1, j-1)`. Si detecta un espacio en blanco, el índice avanza y se evalúa nuevamente el estado mutado."
+        },
+        {
+          "type": "ejercicio",
+          "title": "5. Búsqueda Binaria de Precisión",
+          "content": "Escribe el clásico algoritmo de búsqueda binaria, pero implementado puramente de forma recursiva. El problema se reduce descartando mitades del dominio en base al nodo pivote. Pasa los límites `low` y `high` como parámetros directos para modificar el universo de búsqueda."
+        },
+        {
+          "type": "ejercicio",
+          "title": "6. Análisis Combinatorio de Grafos (Rutas en Matriz)",
+          "content": "En un tablero de tamaño `NxM`, tienes una pieza en la esquina (0,0) que solo puede moverse hacia Abajo o hacia la Derecha. Escribe una función recursiva matemática que retorne cuántos caminos únicos existen hacia el nodo objetivo `(N,M)` sumando las ramificaciones posibles de sus vecinos."
+        },
+        {
+          "type": "ejercicio",
+          "title": "7. Fibonacci: Explosión vs Memoización",
+          "content": "Escribe la función recursiva simple de la secuencia Fibonacci. Luego, escribe una segunda versión optimizada que reciba por referencia un `std::vector<int>` vacío. Antes de realizar el cómputo recursivo, comprueba si el valor ya existe en el vector; de ser así, córtalo y devuelve la respuesta cacheada. Mide el impacto en memoria."
+        },
+        {
+          "type": "ejercicio",
+          "title": "8. Navegador de Directorios Abstracto",
+          "content": "Escribe un simulador recursivo jerárquico. Crea una clase `Carpeta` que contiene un vector de objetos `Carpeta`. Escribe una función recursiva `imprimirArbol(Carpeta c, int profundidad)` que imprima el nombre de la carpeta e itere sobre sus subcarpetas llamándose a sí misma y sumando espacios de indentación para graficar la profundidad."
+        }
       ]
     },
     {
       "type": "pc",
       "title": "Práctica Calificada 1: Sistema de Asignación y Triaje Prehospitalario (SATP)",
-      "content": "### Contexto del Problema\nEl Ministerio de Salud requiere un sistema de consola para gestionar el despacho de ambulancias y el triaje de pacientes en tiempo real. La latencia en la toma de decisiones está costando vidas, por lo que el sistema debe ser capaz de cargar el estado inicial, procesar una cola de emergencias aplicando reglas de negocio polimórficas, y registrar la trazabilidad de las atenciones en medios persistentes.\n\n### Requerimientos del Sistema (Modelado y Lógica)\n\n**Entidades y Actores:**\n- Todo individuo en el sistema es una `Persona` (DNI, Nombres, Edad). Existen dos roles claramente diferenciados: `Paciente` y `PersonalMedico` (Especialidad, Número de Colegiatura).\n- Las unidades de transporte (`Ambulancia`) tienen una placa, un nivel de equipamiento (Soporte Básico o Soporte Avanzado) y están estrictamente vinculadas a un conductor y un paramédico (ambos `PersonalMedico`). Una ambulancia no puede existir lógicamente en el sistema sin su personal asignado.\n- La entidad central es el `CentroDespacho`, encargado de orquestar los recursos.\n\n**Motor de Triaje (Polimorfismo):**\n- Existen diferentes tipos de emergencias que afectan a los pacientes. Debe modelar una abstracción `Emergencia` con un método virtual puro `calcularNivelRiesgo()`.\n- Implemente al menos tres tipos concretos de emergencia (ej. Traumatismo, ParoCardiaco, InfeccionLocal). El cálculo del riesgo (1 al 5, donde 5 es crítico) dependerá de los atributos propios de cada emergencia (ej. el traumatismo evalúa la pérdida de sangre reportada; el paro cardíaco siempre retorna 5).\n- El `CentroDespacho` almacena las emergencias entrantes en una colección heterogénea.\n\n**Persistencia y Flujo de Ejecución:**\n- **Inicialización:** Al arrancar, el programa debe leer un archivo `flota_base.txt` que contiene las placas y tipos de las ambulancias disponibles, instanciándolas dinámicamente.\n- **Procesamiento:** El sistema asigna la ambulancia disponible de mayor nivel a la emergencia con el nivel de riesgo más alto.\n- **Cierre (Destrucción y Logs):** Al finalizar la jornada, el sistema debe liberar toda la memoria dinámica (cuidado con los destructores de la jerarquía) y generar un archivo `bitacora_YYYYMMDD.csv` con el formato: `Placa_Ambulancia, DNI_Paciente, Nivel_Riesgo_Atendido`.\n\n### Criterios de Evaluación\n- **Abstracción:** Correcta identificación de Composición (Ambulancia-Personal) vs. Agregación (Ambulancia-Paciente).\n- **Polimorfismo:** Uso correcto de `std::vector<Emergencia*>` y ligadura dinámica.\n- **Invariantes de Memoria:** Ausencia total de fugas de memoria (memory leaks)."
+      "content": "### Objetivo y Justificación Arquitectónica\nSe busca evaluar la capacidad de abstracción top-down y modelado de datos antes de programar. El sistema requiere aislar responsabilidades (las unidades de transporte y el tipo de emergencia son conceptualmente ajenos) mientras un gestor central (Despacho) orquesta el flujo sin conocer la lógica de bajo nivel. Se calificará rigurosamente el diseño limpio de jerarquías orientadas a objetos y el flujo persistente I/O.\n\n### Requerimientos de Modelado (El Qué)\n\n**1. Diseño de Actores y Propiedad de Memoria:**\n- Modela una clase base `Persona`. Deriva dos roles: `Paciente` y `PersonalMedico`.\n- Implementa la clase `Ambulancia`. Aquí es crítico el diseño relacional: Una ambulancia está **compuesta** por un `PersonalMedico` (no puede existir una ambulancia vacía operando en el sistema), pero se le **agrega** temporalmente un `Paciente`. Asegura esta relación controlando el uso de punteros y los constructores.\n\n**2. Inversión de Control Polimórfico (Motor de Triaje):**\n- El Despacho no debe calcular el riesgo manualmente mediante un `switch` gigantesco; esto es una mala práctica. Crea una abstracción base `Emergencia` que obligue un contrato con el método virtual puro `calcularNivelRiesgo()`.\n- Implementa clases como `Traumatismo` y `ParoCardiaco` derivadas de `Emergencia`. Cada una posee variables internas propias que determinan el nivel de riesgo del 1 al 5. \n- Alimenta un contenedor polimórfico estandarizado (`std::vector<Emergencia*>`) que el Centro de Despacho iterará para tomar decisiones.\n\n**3. Trazabilidad y Archivos Físicos:**\n- **Arranque:** Al iniciar ejecución, lee un archivo base `flota.txt` para instanciar el vector interno de ambulancias y parametrizarlas.\n- **Transacciones y Cierre:** La función `ejecutarJornada()` atiende las emergencias priorizando el riesgo más alto. Antes del `return 0;`, asegúrate de usar destructores virtuales explícitos para borrar la memoria dinámica de los vectores y exporta un `log_operaciones.csv` detallado usando manipuladores de flujos (`ios::app`)."
     },
     {
       "type": "pc",
       "title": "Práctica Calificada 2: Motor de Autómatas Celulares y Dinámica Poblacional (MAC-DP)",
-      "content": "### Contexto del Problema\nUn equipo de biólogos computacionales necesita un simulador espacial en 2D para observar la propagación de una especie invasora (Depredador) sobre una población endémica (Presa) en un terreno con recursos limitados. El terreno es una matriz bidimensional donde cada celda puede estar vacía o contener un agente.\n\n### Requerimientos del Sistema (Modelado y Lógica)\n\n**El Entorno (Top-Down Design):**\n- El `Ecosistema` es el controlador principal. Contiene la grilla espacial (matriz bidimensional dinámica) y maneja el reloj global de la simulación (turnos).\n- Debe existir una clase base `EntidadBiologica` que posea coordenadas espaciales $(x, y)$, un nivel de energía y un identificador visual (char).\n\n**Comportamiento Autónomo:**\nLa `EntidadBiologica` debe definir un contrato estricto mediante el método virtual `void tick(Ecosistema& eco) = 0;`.\n- **Flora (Planta):** Entidad inerte. Su método tick incrementa su energía en +1 por turno. Si alcanza 10 de energía, intenta esparcir una nueva planta en una celda adyacente vacía.\n- **Fauna (Presa):** Se mueve a una celda adyacente aleatoria vacía. Si en su rango de visión (1 celda) hay una Planta, se mueve hacia ella y la 'consume' (la entidad planta debe ser destruida y removida de la grilla), absorbiendo su energía. Pierde 1 de energía por turno; si llega a 0, muere.\n- **Fauna Invasora (Depredador):** Similar a la presa, pero su objetivo exclusivo es cazar Presas. Pierde 2 de energía por turno.\n\n**Algoritmo Recursivo (Evento Catastrófico):**\n- El usuario puede invocar un 'Incendio' ingresando una coordenada $(x,y)$.\n- Debe implementar una función recursiva de tipo Flood-Fill que propague el fuego. El fuego destruye cualquier Planta adyacente, deteniéndose si encuentra una celda vacía o fauna (que huye automáticamente).\n\n**Entrada/Salida Estándar y Persistencia:**\n- El estado inicial del tablero se carga desde `mapa_semilla.txt` (un archivo de texto con caracteres donde `.` es vacío, `P` es planta, `H` es presa, `D` es depredador).\n- Cada 50 turnos, el sistema debe volcar el estado actual de la grilla en consola usando la sobrecarga del operador `<<` para el objeto `Ecosistema`.\n- Al finalizar la simulación (cuando mueren todos los depredadores o todas las presas), se debe generar `estadisticas_finales.txt` detallando cuántas entidades de cada tipo nacieron y murieron.\n\n### Criterios de Evaluación\n- **Gestión de Punteros en Matrices:** Correcto manejo de `EntidadBiologica***` o `std::vector<std::vector<EntidadBiologica*>>`. Manejo seguro de punteros nulos para representar celdas vacías.\n- **Ciclo de Vida:** Mecanismo seguro para eliminar objetos dinámicos de la matriz durante el turno (evitando dangling pointers).\n- **Lógica Algorítmica:** Precisión en la recursividad del evento catastrófico sin desbordar el stack."
+      "content": "### Objetivo y Justificación Arquitectónica\nEste proyecto exige control total del ciclo de vida de la memoria dinámica dentro de arreglos bidimensionales interactivos. Modela un ecosistema simplificado donde un gestor macro procesa peticiones de agentes autónomos cada ciclo (Turno). Evalúa el dominio lógico recursivo y encapsulamiento estricto bajo condiciones dinámicas cambiantes.\n\n### Requerimientos de Modelado (El Qué)\n\n**1. Abstracción del Terreno (Gestor Macro):**\n- Diseña la clase maestra `Ecosistema` que alberga la grilla bidimensional. Esta grilla debe ser manejada usando memoria segura en un `std::vector<std::vector<EntidadBiologica*>>`, donde celdas vacías son `nullptr`.\n- El Gestor contiene la variable del tiempo `turnoActual` y ejecuta el ciclo global del sistema.\n\n**2. Agentes Autónomos y Polimorfismo Fuerte:**\n- `EntidadBiologica` es la clase base con ubicación espacial `(x, y)` y energía. Expone un contrato estricto: `virtual void actuar(Ecosistema& mundo) = 0;`.\n- Implementa clases biológicas específicas. `Planta` acumula energía cada turno. `Presa` verifica las celdas adyacentes del puntero del Ecosistema; si detecta espacio vacío, se mueve; si detecta planta, la elimina limpiando el puntero del gestor. `Depredador` sigue la misma lógica jerárquica para cazar presas.\n\n**3. Integración de la Recursividad Espacial:**\n- Eventos asíncronos controlados: El usuario invoca un 'Incendio'. Programa una función recursiva puramente algorítmica de Flood-Fill sobre el tablero del Ecosistema.\n- La recursión evalúa el nodo actual, si pertenece a una 'Planta', libera el puntero (`delete`), lo vuelve `nullptr`, y lanza recursivamente el mismo proceso en sus nodos arriba, abajo, izquierda y derecha.\n\n**4. Visualización e I/O Segregado:**\n- La entidad `Ecosistema` sobrecargará su operador `<<` para imprimir a la consola el estado de la grilla sin exponer su matriz privada a métodos externos. \n- La generación inicial debe abstraer la lectura del entorno leyendo `mapa_semilla.txt` que contiene un lienzo en `ASCII`. Mapea cada caracter a una instanciación en el *heap* de su clase biológica respectiva."
     }
   ]
 }
