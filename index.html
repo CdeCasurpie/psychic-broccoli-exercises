@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repositorio de Ejercicios | CS</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #f4f4f9;
+            --text-color: #333;
+            --accent-color: #2c3e50;
+            --border-color: #ddd;
+            --alert-bg: #fff3cd;
+            --alert-text: #856404;
+            --concept-bg: #e2e3e5;
+            --concept-text: #383d41;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        select {
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        details {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        summary {
+            font-weight: 600;
+            font-size: 1.2rem;
+            padding: 1rem;
+            cursor: pointer;
+            background-color: #fafafa;
+            border-bottom: 1px solid transparent;
+            list-style: none;
+        }
+
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
+        details[open] summary {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .block-content {
+            padding: 1.5rem;
+        }
+
+        .block-description {
+            font-style: italic;
+            margin-bottom: 1.5rem;
+            color: #666;
+        }
+
+        /* Tipos de items en ejercicios */
+        .item-ejercicio {
+            margin-bottom: 1.5rem;
+        }
+        
+        .item-ejercicio h4 {
+            margin: 0 0 0.5rem 0;
+            color: var(--accent-color);
+        }
+
+        .item-alerta {
+            background-color: var(--alert-bg);
+            color: var(--alert-text);
+            padding: 1rem;
+            border-left: 4px solid #ffeeba;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .item-concepto {
+            background-color: var(--concept-bg);
+            color: var(--concept-text);
+            padding: 1rem;
+            border-left: 4px solid #d6d8db;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Estilos Markdown para PCs */
+        .markdown-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+        }
+        .markdown-body th, .markdown-body td {
+            border: 1px solid var(--border-color);
+            padding: 0.5rem;
+            text-align: left;
+        }
+        .markdown-body th { background-color: #f8f9fa; }
+        .markdown-body pre {
+            background: #2d2d2d;
+            color: #ccc;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .markdown-body code {
+            font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+            background: #eee;
+            color: #d63384;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+        }
+        .markdown-body pre code { background: none; color: inherit; padding: 0; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Prácticas y Evaluaciones</h1>
+        <select id="jsonSelector">
+            <option value="" disabled selected>Cargando índices...</option>
+            </select>
+    </header>
+
+    <main id="mainContainer">
+        <p>Selecciona un módulo en el menú superior para cargar el contenido.</p>
+    </main>
+
+    <script>
+        // Entorno: Define aquí los JSON que subirás a tu carpeta de GitHub Pages (ej. /data)
+        const DATA_SOURCES = [
+            { path: 'data/data.json', name: 'Módulo 1: Archivos y CRUD' },
+        ];
+
+        const selector = document.getElementById('jsonSelector');
+        const container = document.getElementById('mainContainer');
+
+        // Inicialización
+        function init() {
+            selector.innerHTML = '<option value="" disabled selected>Seleccione un set de datos</option>';
+            DATA_SOURCES.forEach(source => {
+                const option = document.createElement('option');
+                option.value = source.path;
+                option.textContent = source.name;
+                selector.appendChild(option);
+            });
+
+            selector.addEventListener('change', (e) => loadData(e.target.value));
+        }
+
+        // Fecth asíncrono del JSON
+        async function loadData(path) {
+            container.innerHTML = '<p>Cargando estructura espere...</p>';
+            try {
+                const response = await fetch(path);
+                if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+                const data = await response.json();
+                renderDOM(data);
+            } catch (error) {
+                container.innerHTML = `<p style="color:red;">Error de carga o archivo local no encontrado (CORS). Si pruebas en local, usa un Live Server. Error: ${error.message}</p>`;
+            }
+        }
+
+        // Renderizado del árbol DOM
+        function renderDOM(data) {
+            container.innerHTML = ''; 
+            
+            data.blocks.forEach(block => {
+                const details = document.createElement('details');
+                const summary = document.createElement('summary');
+                summary.textContent = block.title;
+                details.appendChild(summary);
+
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'block-content';
+
+                if (block.description) {
+                    const desc = document.createElement('p');
+                    desc.className = 'block-description';
+                    desc.textContent = block.description;
+                    contentDiv.appendChild(desc);
+                }
+
+                // Invariante topológica: El bloque es PC (Markdown) o Ejercicios (Vector de objetos)
+                if (block.type === 'pc') {
+                    const mdDiv = document.createElement('div');
+                    mdDiv.className = 'markdown-body';
+                    mdDiv.innerHTML = marked.parse(block.content);
+                    contentDiv.appendChild(mdDiv);
+                } else if (block.type === 'ejercicios') {
+                    block.items.forEach(item => {
+                        const itemDiv = document.createElement('div');
+                        itemDiv.className = `item-${item.type}`;
+
+                        if (item.type === 'ejercicio') {
+                            const h4 = document.createElement('h4');
+                            h4.textContent = item.title;
+                            itemDiv.appendChild(h4);
+                            const p = document.createElement('p');
+                            p.textContent = item.content;
+                            itemDiv.appendChild(p);
+                        } else {
+                            // Alertas, conceptos, comentarios
+                            itemDiv.textContent = item.content;
+                        }
+                        contentDiv.appendChild(itemDiv);
+                    });
+                }
+
+                details.appendChild(contentDiv);
+                container.appendChild(details);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

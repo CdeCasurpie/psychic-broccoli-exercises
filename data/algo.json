@@ -1,0 +1,74 @@
+A continuación, se presentan las dos Prácticas Calificadas (PCs) rediseñadas. La redacción simula un entorno de evaluación real, obligando a los estudiantes a realizar el proceso de abstracción, diseño top-down y modelado de relaciones antes de codificar.
+
+---
+
+### Práctica Calificada 1 Sistema de Asignación y Triaje Prehospitalario (SATP)
+
+Contexto del Problema
+El Ministerio de Salud requiere un sistema de consola para gestionar el despacho de ambulancias y el triaje de pacientes en tiempo real. La latencia en la toma de decisiones está costando vidas, por lo que el sistema debe ser capaz de cargar el estado inicial, procesar una cola de emergencias aplicando reglas de negocio polimórficas, y registrar la trazabilidad de las atenciones en medios persistentes.
+
+Requerimientos del Sistema (Modelado y Lógica)
+
+1. Entidades y Actores
+ Todo individuo en el sistema es una `Persona` (DNI, Nombres, Edad). Existen dos roles claramente diferenciados `Paciente` y `PersonalMedico` (Especialidad, Número de Colegiatura).
+ Las unidades de transporte (`Ambulancia`) tienen una placa, un nivel de equipamiento (Soporte Básico o Soporte Avanzado) y están estrictamente vinculadas a un conductor y un paramédico (ambos `PersonalMedico`). Una ambulancia no puede existir lógicamente en el sistema sin su personal asignado.
+ La entidad central es el `CentroDespacho`, encargado de orquestar los recursos.
+
+
+2. Motor de Triaje (Polimorfismo)
+ Existen diferentes tipos de emergencias que afectan a los pacientes. Debe modelar una abstracción `Emergencia` con un método virtual puro `calcularNivelRiesgo()`.
+ Implemente al menos tres tipos concretos de emergencia (ej. `Traumatismo`, `ParoCardiaco`, `InfeccionLocal`). El cálculo del riesgo (1 al 5, donde 5 es crítico) dependerá de los atributos propios de cada emergencia (ej. el traumatismo evalúa la pérdida de sangre reportada; el paro cardíaco siempre retorna 5).
+ El `CentroDespacho` almacena las emergencias entrantes en una colección heterogénea.
+
+
+3. Persistencia y Flujo de Ejecución
+ Inicialización Al arrancar, el programa debe leer un archivo `flota_base.txt` que contiene las placas y tipos de las ambulancias disponibles, instanciándolas dinámicamente.
+ Procesamiento El sistema asigna la ambulancia disponible de mayor nivel a la emergencia con el nivel de riesgo más alto.
+ Cierre (Destrucción y Logs) Al finalizar la jornada, el sistema debe liberar toda la memoria dinámica (cuidado con los destructores de la jerarquía) y generar un archivo `bitacora_YYYYMMDD.csv` con el formato `Placa_Ambulancia, DNI_Paciente, Nivel_Riesgo_Atendido`.
+
+
+
+Criterios de Evaluación
+
+ Abstracción Correcta identificación de Composición (Ambulancia-Personal) vs. Agregación (Ambulancia-Paciente).
+ Polimorfismo Uso correcto de `stdvectorEmergencia` y ligadura dinámica.
+ Invariantes de Memoria Ausencia total de fugas de memoria (memory leaks).
+
+---
+
+### Práctica Calificada 2 Motor de Autómatas Celulares y Dinámica Poblacional (MAC-DP)
+
+Contexto del Problema
+Un equipo de biólogos computacionales necesita un simulador espacial en 2D para observar la propagación de una especie invasora (Depredador) sobre una población endémica (Presa) en un terreno con recursos limitados. El terreno es una matriz bidimensional donde cada celda puede estar vacía o contener un agente.
+
+Requerimientos del Sistema (Modelado y Lógica)
+
+1. El Entorno (Top-Down Design)
+ El `Ecosistema` es el controlador principal. Contiene la grilla espacial (matriz bidimensional dinámica) y maneja el reloj global de la simulación (turnos).
+ Debe existir una clase base `EntidadBiologica` que posea coordenadas espaciales , un nivel de `energia` y un identificador visual (`char`).
+
+
+2. Comportamiento Autónomo
+ La `EntidadBiologica` debe definir un contrato estricto mediante el método `virtual void tick(Ecosistema& eco) = 0;`.
+ Flora (`Planta`) Entidad inerte. Su método `tick` incrementa su energía en +1 por turno. Si alcanza 10 de energía, intenta esparcir una nueva planta en una celda adyacente vacía.
+ Fauna (`Presa`) Se mueve a una celda adyacente aleatoria vacía. Si en su rango de visión (1 celda) hay una `Planta`, se mueve hacia ella y la consume (la entidad planta debe ser destruida y removida de la grilla), absorbiendo su energía. Pierde 1 de energía por turno; si llega a 0, muere.
+ Fauna Invasora (`Depredador`) Similar a la presa, pero su objetivo exclusivo es cazar `Presa`s. Pierde 2 de energía por turno.
+
+
+3. Algoritmo Recursivo (Evento Catastrófico)
+ El usuario puede invocar un Incendio ingresando una coordenada .
+ Debe implementar una función recursiva de tipo Flood-Fill que propague el fuego. El fuego destruye cualquier `Planta` adyacente, deteniéndose si encuentra una celda vacía o fauna (que huye automáticamente).
+
+
+4. EntradaSalida Estándar y Persistencia
+ El estado inicial del tablero se carga desde `mapa_semilla.txt` (un archivo de texto con caracteres donde '.' es vacío, 'P' es planta, 'H' es presa, 'D' es depredador).
+ Cada 50 turnos, el sistema debe volcar el estado actual de la grilla en consola usando la sobrecarga del operador `` para el objeto `Ecosistema`.
+ Al finalizar la simulación (cuando mueren todos los depredadores o todas las presas), se debe generar `estadisticas_finales.txt` detallando cuántas entidades de cada tipo nacieron y murieron.
+
+
+
+Criterios de Evaluación
+
+ Gestión de Punteros en Matrices Correcto manejo de `EntidadBiologica` o `stdvectorstdvectorEntidadBiologica`. Manejo seguro de punteros nulos para representar celdas vacías.
+ Ciclo de Vida Mecanismo seguro para eliminar objetos dinámicos de la matriz durante el turno (evitando dangling pointers).
+ Lógica Algorítmica Precisión en la recursividad del evento catastrófico sin desbordar el stack.
