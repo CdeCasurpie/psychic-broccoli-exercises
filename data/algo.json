@@ -1,74 +1,127 @@
-A continuación, se presentan las dos Prácticas Calificadas (PCs) rediseñadas. La redacción simula un entorno de evaluación real, obligando a los estudiantes a realizar el proceso de abstracción, diseño top-down y modelado de relaciones antes de codificar.
-
----
-
-### Práctica Calificada 1 Sistema de Asignación y Triaje Prehospitalario (SATP)
-
-Contexto del Problema
-El Ministerio de Salud requiere un sistema de consola para gestionar el despacho de ambulancias y el triaje de pacientes en tiempo real. La latencia en la toma de decisiones está costando vidas, por lo que el sistema debe ser capaz de cargar el estado inicial, procesar una cola de emergencias aplicando reglas de negocio polimórficas, y registrar la trazabilidad de las atenciones en medios persistentes.
-
-Requerimientos del Sistema (Modelado y Lógica)
-
-1. Entidades y Actores
- Todo individuo en el sistema es una `Persona` (DNI, Nombres, Edad). Existen dos roles claramente diferenciados `Paciente` y `PersonalMedico` (Especialidad, Número de Colegiatura).
- Las unidades de transporte (`Ambulancia`) tienen una placa, un nivel de equipamiento (Soporte Básico o Soporte Avanzado) y están estrictamente vinculadas a un conductor y un paramédico (ambos `PersonalMedico`). Una ambulancia no puede existir lógicamente en el sistema sin su personal asignado.
- La entidad central es el `CentroDespacho`, encargado de orquestar los recursos.
-
-
-2. Motor de Triaje (Polimorfismo)
- Existen diferentes tipos de emergencias que afectan a los pacientes. Debe modelar una abstracción `Emergencia` con un método virtual puro `calcularNivelRiesgo()`.
- Implemente al menos tres tipos concretos de emergencia (ej. `Traumatismo`, `ParoCardiaco`, `InfeccionLocal`). El cálculo del riesgo (1 al 5, donde 5 es crítico) dependerá de los atributos propios de cada emergencia (ej. el traumatismo evalúa la pérdida de sangre reportada; el paro cardíaco siempre retorna 5).
- El `CentroDespacho` almacena las emergencias entrantes en una colección heterogénea.
-
-
-3. Persistencia y Flujo de Ejecución
- Inicialización Al arrancar, el programa debe leer un archivo `flota_base.txt` que contiene las placas y tipos de las ambulancias disponibles, instanciándolas dinámicamente.
- Procesamiento El sistema asigna la ambulancia disponible de mayor nivel a la emergencia con el nivel de riesgo más alto.
- Cierre (Destrucción y Logs) Al finalizar la jornada, el sistema debe liberar toda la memoria dinámica (cuidado con los destructores de la jerarquía) y generar un archivo `bitacora_YYYYMMDD.csv` con el formato `Placa_Ambulancia, DNI_Paciente, Nivel_Riesgo_Atendido`.
-
-
-
-Criterios de Evaluación
-
- Abstracción Correcta identificación de Composición (Ambulancia-Personal) vs. Agregación (Ambulancia-Paciente).
- Polimorfismo Uso correcto de `stdvectorEmergencia` y ligadura dinámica.
- Invariantes de Memoria Ausencia total de fugas de memoria (memory leaks).
-
----
-
-### Práctica Calificada 2 Motor de Autómatas Celulares y Dinámica Poblacional (MAC-DP)
-
-Contexto del Problema
-Un equipo de biólogos computacionales necesita un simulador espacial en 2D para observar la propagación de una especie invasora (Depredador) sobre una población endémica (Presa) en un terreno con recursos limitados. El terreno es una matriz bidimensional donde cada celda puede estar vacía o contener un agente.
-
-Requerimientos del Sistema (Modelado y Lógica)
-
-1. El Entorno (Top-Down Design)
- El `Ecosistema` es el controlador principal. Contiene la grilla espacial (matriz bidimensional dinámica) y maneja el reloj global de la simulación (turnos).
- Debe existir una clase base `EntidadBiologica` que posea coordenadas espaciales , un nivel de `energia` y un identificador visual (`char`).
-
-
-2. Comportamiento Autónomo
- La `EntidadBiologica` debe definir un contrato estricto mediante el método `virtual void tick(Ecosistema& eco) = 0;`.
- Flora (`Planta`) Entidad inerte. Su método `tick` incrementa su energía en +1 por turno. Si alcanza 10 de energía, intenta esparcir una nueva planta en una celda adyacente vacía.
- Fauna (`Presa`) Se mueve a una celda adyacente aleatoria vacía. Si en su rango de visión (1 celda) hay una `Planta`, se mueve hacia ella y la consume (la entidad planta debe ser destruida y removida de la grilla), absorbiendo su energía. Pierde 1 de energía por turno; si llega a 0, muere.
- Fauna Invasora (`Depredador`) Similar a la presa, pero su objetivo exclusivo es cazar `Presa`s. Pierde 2 de energía por turno.
-
-
-3. Algoritmo Recursivo (Evento Catastrófico)
- El usuario puede invocar un Incendio ingresando una coordenada .
- Debe implementar una función recursiva de tipo Flood-Fill que propague el fuego. El fuego destruye cualquier `Planta` adyacente, deteniéndose si encuentra una celda vacía o fauna (que huye automáticamente).
-
-
-4. EntradaSalida Estándar y Persistencia
- El estado inicial del tablero se carga desde `mapa_semilla.txt` (un archivo de texto con caracteres donde '.' es vacío, 'P' es planta, 'H' es presa, 'D' es depredador).
- Cada 50 turnos, el sistema debe volcar el estado actual de la grilla en consola usando la sobrecarga del operador `` para el objeto `Ecosistema`.
- Al finalizar la simulación (cuando mueren todos los depredadores o todas las presas), se debe generar `estadisticas_finales.txt` detallando cuántas entidades de cada tipo nacieron y murieron.
-
-
-
-Criterios de Evaluación
-
- Gestión de Punteros en Matrices Correcto manejo de `EntidadBiologica` o `stdvectorstdvectorEntidadBiologica`. Manejo seguro de punteros nulos para representar celdas vacías.
- Ciclo de Vida Mecanismo seguro para eliminar objetos dinámicos de la matriz durante el turno (evitando dangling pointers).
- Lógica Algorítmica Precisión en la recursividad del evento catastrófico sin desbordar el stack.
+{
+  "title": "Maratón de Programación II: CS1112",
+  "blocks": [
+    {
+      "type": "ejercicios",
+      "title": "Módulo 1: Problemas Clásicos y Persistencia (CRUD y Files)",
+      "description": "Enfoque: Manipulación de flujos de datos (fstream) y gestión de memoria en contenedores.",
+      "items": [
+        { "type": "concepto", "content": "Asegurar el manejo de memoria mediante contenedores estándar antes de persistir datos." },
+        { "type": "ejercicio", "title": "Parser de CSV Manual", "content": "Lectura de un archivo .csv y tokenización mediante stringstream." },
+        { "type": "ejercicio", "title": "Escritura en Modo Append", "content": "Registro de logs de errores con marcas de tiempo en archivos de texto." },
+        { "type": "ejercicio", "title": "CRUD de Inventario", "content": "Creación, lectura, actualización y eliminación de registros en un std::vector<Base*>." },
+        { "type": "ejercicio", "title": "Serialización Binaria", "content": "Guardar y cargar el estado de un arreglo de objetos en formato binario (ios::binary)." },
+        { "type": "ejercicio", "title": "Buscador por Atributo", "content": "Implementación de búsqueda lineal sobre archivos para filtrar registros por criterios específicos." },
+        { "type": "ejercicio", "title": "Validador de Tipos", "content": "Función para verificar la integridad de datos leídos (conversión segura con stoi/stod)." },
+        { "type": "ejercicio", "title": "Filtro de Datos Dinámico", "content": "Exportación de subconjuntos de datos a nuevos archivos basados en condiciones lógicas." },
+        { "type": "ejercicio", "title": "Gestión de Índices", "content": "Creación de un archivo de índices para acceso rápido a registros en archivos grandes." },
+        { "type": "ejercicio", "title": "Reporte Estadístico", "content": "Lectura de datos numéricos y generación de un archivo de resumen (promedios, máximos, mínimos)." },
+        { "type": "ejercicio", "title": "Formateo de Salida", "content": "Uso de manipuladores de flujo (setw, fixed, setprecision) para reportes en consola." },
+        { "type": "ejercicio", "title": "Sincronización de Vectores", "content": "Actualizar un archivo de texto cada vez que el vector en memoria sufra cambios." },
+        { "type": "ejercicio", "title": "Carga de Configuración", "content": "Leer parámetros de ejecución (ancho de ventana, límites) desde un archivo .txt." },
+        { "type": "ejercicio", "title": "Contador de Frecuencias", "content": "Leer un texto y contar ocurrencias de palabras clave, guardando el resultado." },
+        { "type": "ejercicio", "title": "Merging de Archivos", "content": "Combinar dos archivos ordenados en un tercer archivo manteniendo el orden." },
+        { "type": "ejercicio", "title": "Backup Automático", "content": "Función que copia el contenido de la base de datos a un archivo .bak." },
+        { "type": "ejercicio", "title": "Limpieza de Datos", "content": "Script para eliminar líneas vacías o corruptas de un archivo de entrada." },
+        { "type": "ejercicio", "title": "Cifrado César Básico", "content": "Lectura de archivo, desplazamiento de caracteres y escritura de archivo cifrado." },
+        { "type": "ejercicio", "title": "Paginación en Consola", "content": "Leer un archivo y mostrarlo al usuario en bloques de 10 registros." },
+        { "type": "ejercicio", "title": "Conversor de Formatos", "content": "Leer un archivo de texto plano y convertirlo a un formato con delimitadores específicos." },
+        { "type": "ejercicio", "title": "Gestor de Sesiones", "content": "Guardar el último estado de una simulación para reanudarla en la próxima ejecución." }
+      ]
+    },
+    {
+      "type": "ejercicios",
+      "title": "Módulo 2: Pensamiento Abstracto y Diseño Top-Down",
+      "description": "Enfoque: Modelado de sistemas y descomposición funcional.",
+      "items": [
+        { "type": "alerta", "content": "El diseño de la arquitectura (header files e interfaces) debe preceder siempre a la implementación funcional." },
+        { "type": "ejercicio", "title": "Modelado de un ATM", "content": "Identificación de estados y transiciones antes de definir clases." },
+        { "type": "ejercicio", "title": "Diagrama de Flujo de una Simulación", "content": "Trazado manual de la lógica de colisiones en un entorno 2D." },
+        { "type": "ejercicio", "title": "Descomposición de un E-commerce", "content": "Dividir el sistema en Carrito, Inventario y Pasarela de Pagos." },
+        { "type": "ejercicio", "title": "Jerarquía de Menús", "content": "Diseño de una interfaz de consola anidada usando estructuras de control." },
+        { "type": "ejercicio", "title": "Definición de Invariantes", "content": "Identificación de reglas de negocio que nunca deben romperse en el código." },
+        { "type": "ejercicio", "title": "Abstracción de un Personaje", "content": "Diferenciar entre atributos visuales y atributos lógicos de juego." },
+        { "type": "ejercicio", "title": "Diseño de Protocolo", "content": "Definir cómo se comunicarán dos módulos independientes mediante parámetros." },
+        { "type": "ejercicio", "title": "Mapa de Responsabilidades", "content": "Asignación de tareas únicas a funciones específicas (Single Responsibility Principle)." },
+        { "type": "ejercicio", "title": "Modelado de Tráfico", "content": "Abstracción de vehículos como puntos con vectores de velocidad y posición." },
+        { "type": "ejercicio", "title": "Planificación de Casos de Prueba", "content": "Diseñar los Edge Cases antes de escribir el algoritmo principal." },
+        { "type": "ejercicio", "title": "Diagrama de Secuencia Manual", "content": "Rastrear el camino de un dato desde la entrada hasta el archivo." },
+        { "type": "ejercicio", "title": "Jerarquía de Tipos", "content": "Decidir qué atributos van en una Clase Base y cuáles en las Derivadas." },
+        { "type": "ejercicio", "title": "Modularización de Cálculos", "content": "Separar la lógica matemática de la lógica de entrada/salida." },
+        { "type": "ejercicio", "title": "Máquina de Estados Simple", "content": "Modelado de un semáforo o controlador de acceso." },
+        { "type": "ejercicio", "title": "Análisis de Escalabilidad", "content": "Pensar cómo agregar un nuevo tipo de usuario sin modificar el main." },
+        { "type": "ejercicio", "title": "Prototipado de Interfaces", "content": "Escribir las firmas de las funciones (header files) antes de los cuerpos." },
+        { "type": "ejercicio", "title": "Identificación de Dependencias", "content": "Determinar qué módulos necesitan a otros para existir." },
+        { "type": "ejercicio", "title": "Abstracción de un Sistema de Archivos", "content": "Modelar Carpetas y Archivos como entidades relacionadas." },
+        { "type": "ejercicio", "title": "Diseño de una Cola de Tareas", "content": "Abstracción de procesos pendientes de ejecución." },
+        { "type": "ejercicio", "title": "Refactorización Teórica", "content": "Tomar un código espagueti y rediseñarlo en papel usando POO." }
+      ]
+    },
+    {
+      "type": "ejercicios",
+      "title": "Módulo 3: POO y Composición Estratégica",
+      "description": "Enfoque: Relaciones de propiedad y encapsulamiento para agilidad.",
+      "items": [
+        { "type": "concepto", "content": "La jerarquía de herencia debe modelar relaciones 'es-un', mientras que la composición define relaciones 'tiene-un'." },
+        { "type": "ejercicio", "title": "Composición de un Motor", "content": "Clase Motor dentro de clase Auto (relación de vida estricta)." },
+        { "type": "ejercicio", "title": "Agregación de Estudiantes", "content": "Clase Aula que contiene punteros a objetos Estudiante." },
+        { "type": "ejercicio", "title": "Lista de Punteros Polimórficos", "content": "Manejo de un vector<Figura*> para invocar métodos virtuales." },
+        { "type": "ejercicio", "title": "Uso de Getters/Setters Protegidos", "content": "Controlar el acceso a datos sensibles en jerarquías de herencia." },
+        { "type": "ejercicio", "title": "Constructor de Delegación", "content": "Llamar a un constructor desde otro para evitar redundancia." },
+        { "type": "ejercicio", "title": "Clases Abstractas para Interfaces", "content": "Definición de una base Entidad con método puro actualizar()." },
+        { "type": "ejercicio", "title": "Sobrecarga del Operador <<", "content": "Facilitar la impresión de objetos complejos en archivos o consola." },
+        { "type": "ejercicio", "title": "Destructores Virtuales", "content": "Implementación obligatoria para evitar fugas de memoria en polimorfismo." },
+        { "type": "ejercicio", "title": "Clase Manager", "content": "Creación de una clase controladora que orqueste la relación entre todas las demás." },
+        { "type": "ejercicio", "title": "Herencia Múltiple Controlada", "content": "Implementación de mixins para agregar funcionalidades específicas." },
+        { "type": "ejercicio", "title": "Objetos Const", "content": "Uso de const en métodos que no modifican el estado del objeto." },
+        { "type": "ejercicio", "title": "Pasaje por Referencia de Objetos", "content": "Optimización de rendimiento evitando copias innecesarias." },
+        { "type": "ejercicio", "title": "Composición de UI", "content": "Una clase Ventana compuesta por múltiples objetos Boton." },
+        { "type": "ejercicio", "title": "Encapsulamiento de Lógica de Archivos", "content": "Una clase Database que oculte los detalles de fstream." },
+        { "type": "ejercicio", "title": "Relación Unidireccional vs Bidireccional", "content": "Implementar vínculos entre objetos Padre e Hijo." },
+        { "type": "ejercicio", "title": "Inicialización Dinámica en el Constructor", "content": "Uso de new dentro del constructor y delete en el destructor." },
+        { "type": "ejercicio", "title": "Clase Punto y Línea", "content": "Composición clásica para geometría computacional." },
+        { "type": "ejercicio", "title": "Sobrecarga de Comparadores", "content": "Permitir que objetos personalizados se ordenen en un std::vector." },
+        { "type": "ejercicio", "title": "Uso de friend", "content": "Permitir acceso controlado a funciones externas de visualización." },
+        { "type": "ejercicio", "title": "Modelado de un Zoo", "content": "Herencia de Animal -> Mamifero -> Perro con métodos virtuales específicos." }
+      ]
+    },
+    {
+      "type": "ejercicios",
+      "title": "Módulo 4: Recursividad y Pensamiento Lógico",
+      "description": "Enfoque: Resolución de problemas mediante inducción y división.",
+      "items": [
+        { "type": "alerta", "content": "Toda función recursiva requiere un caso base explícito para evitar desbordamiento del Stack (Stack Overflow)." },
+        { "type": "ejercicio", "title": "Factorial e Inducción", "content": "El 'Hello World' de la recursión para entender el Stack." },
+        { "type": "ejercicio", "title": "Fibonacci Optimizado", "content": "Comparativa entre recursión simple y necesidad de memoización." },
+        { "type": "ejercicio", "title": "Búsqueda Binaria Recursiva", "content": "Implementación sobre arreglos ordenados." },
+        { "type": "ejercicio", "title": "Recorrido de Directorios", "content": "Función recursiva para listar archivos en carpetas anidadas." },
+        { "type": "ejercicio", "title": "Torres de Hanoi", "content": "El problema clásico de transferencia de estados." },
+        { "type": "ejercicio", "title": "Suma de Elementos", "content": "Sumar un vector dividiéndolo en mitades." },
+        { "type": "ejercicio", "title": "Palíndromos", "content": "Verificación recursiva de cadenas de caracteres." },
+        { "type": "ejercicio", "title": "Máximo Común Divisor (Euclides)", "content": "Implementación elegante del algoritmo." },
+        { "type": "ejercicio", "title": "Inversión de Cadenas", "content": "Imprimir un string al revés usando la pila de llamadas." },
+        { "type": "ejercicio", "title": "Conteo de Dígitos", "content": "Contar cuántas veces aparece un dígito en un número de forma recursiva." },
+        { "type": "ejercicio", "title": "Potencia de un Número", "content": "Implementación de base elevada a un exponente mediante recursión." },
+        { "type": "ejercicio", "title": "Flood Fill", "content": "Algoritmo básico para llenar áreas (útil en simulaciones)." },
+        { "type": "ejercicio", "title": "Generación de Permutaciones", "content": "Listar todas las combinaciones posibles de un conjunto." },
+        { "type": "ejercicio", "title": "Check de Ordenamiento", "content": "Función booleana que verifica si un vector está ordenado." },
+        { "type": "ejercicio", "title": "Suma de Dígitos", "content": "Reducir un número a la suma de sus componentes." },
+        { "type": "ejercicio", "title": "Cruce de Laberinto (Backtracking)", "content": "Encontrar la salida en una matriz de enteros." },
+        { "type": "ejercicio", "title": "Conversión a Binario", "content": "Transformar decimales a binario mediante divisiones sucesivas." },
+        { "type": "ejercicio", "title": "Mínimo de un Vector", "content": "Encontrar el menor elemento recursivamente." },
+        { "type": "ejercicio", "title": "Cálculo de Caminos", "content": "Encontrar cuántas formas hay de llegar a un punto en una grilla." },
+        { "type": "ejercicio", "title": "Estructuras Recursivas", "content": "Introducción conceptual a nodos de listas enlazadas." }
+      ]
+    },
+    {
+      "type": "pc",
+      "title": "Práctica Calificada 1: Sistema de Asignación y Triaje Prehospitalario (SATP)",
+      "content": "### Contexto del Problema\nEl Ministerio de Salud requiere un sistema de consola para gestionar el despacho de ambulancias y el triaje de pacientes en tiempo real. La latencia en la toma de decisiones está costando vidas, por lo que el sistema debe ser capaz de cargar el estado inicial, procesar una cola de emergencias aplicando reglas de negocio polimórficas, y registrar la trazabilidad de las atenciones en medios persistentes.\n\n### Requerimientos del Sistema (Modelado y Lógica)\n\n**Entidades y Actores:**\n- Todo individuo en el sistema es una `Persona` (DNI, Nombres, Edad). Existen dos roles claramente diferenciados: `Paciente` y `PersonalMedico` (Especialidad, Número de Colegiatura).\n- Las unidades de transporte (`Ambulancia`) tienen una placa, un nivel de equipamiento (Soporte Básico o Soporte Avanzado) y están estrictamente vinculadas a un conductor y un paramédico (ambos `PersonalMedico`). Una ambulancia no puede existir lógicamente en el sistema sin su personal asignado.\n- La entidad central es el `CentroDespacho`, encargado de orquestar los recursos.\n\n**Motor de Triaje (Polimorfismo):**\n- Existen diferentes tipos de emergencias que afectan a los pacientes. Debe modelar una abstracción `Emergencia` con un método virtual puro `calcularNivelRiesgo()`.\n- Implemente al menos tres tipos concretos de emergencia (ej. Traumatismo, ParoCardiaco, InfeccionLocal). El cálculo del riesgo (1 al 5, donde 5 es crítico) dependerá de los atributos propios de cada emergencia (ej. el traumatismo evalúa la pérdida de sangre reportada; el paro cardíaco siempre retorna 5).\n- El `CentroDespacho` almacena las emergencias entrantes en una colección heterogénea.\n\n**Persistencia y Flujo de Ejecución:**\n- **Inicialización:** Al arrancar, el programa debe leer un archivo `flota_base.txt` que contiene las placas y tipos de las ambulancias disponibles, instanciándolas dinámicamente.\n- **Procesamiento:** El sistema asigna la ambulancia disponible de mayor nivel a la emergencia con el nivel de riesgo más alto.\n- **Cierre (Destrucción y Logs):** Al finalizar la jornada, el sistema debe liberar toda la memoria dinámica (cuidado con los destructores de la jerarquía) y generar un archivo `bitacora_YYYYMMDD.csv` con el formato: `Placa_Ambulancia, DNI_Paciente, Nivel_Riesgo_Atendido`.\n\n### Criterios de Evaluación\n- **Abstracción:** Correcta identificación de Composición (Ambulancia-Personal) vs. Agregación (Ambulancia-Paciente).\n- **Polimorfismo:** Uso correcto de `std::vector<Emergencia*>` y ligadura dinámica.\n- **Invariantes de Memoria:** Ausencia total de fugas de memoria (memory leaks)."
+    },
+    {
+      "type": "pc",
+      "title": "Práctica Calificada 2: Motor de Autómatas Celulares y Dinámica Poblacional (MAC-DP)",
+      "content": "### Contexto del Problema\nUn equipo de biólogos computacionales necesita un simulador espacial en 2D para observar la propagación de una especie invasora (Depredador) sobre una población endémica (Presa) en un terreno con recursos limitados. El terreno es una matriz bidimensional donde cada celda puede estar vacía o contener un agente.\n\n### Requerimientos del Sistema (Modelado y Lógica)\n\n**El Entorno (Top-Down Design):**\n- El `Ecosistema` es el controlador principal. Contiene la grilla espacial (matriz bidimensional dinámica) y maneja el reloj global de la simulación (turnos).\n- Debe existir una clase base `EntidadBiologica` que posea coordenadas espaciales $(x, y)$, un nivel de energía y un identificador visual (char).\n\n**Comportamiento Autónomo:**\nLa `EntidadBiologica` debe definir un contrato estricto mediante el método virtual `void tick(Ecosistema& eco) = 0;`.\n- **Flora (Planta):** Entidad inerte. Su método tick incrementa su energía en +1 por turno. Si alcanza 10 de energía, intenta esparcir una nueva planta en una celda adyacente vacía.\n- **Fauna (Presa):** Se mueve a una celda adyacente aleatoria vacía. Si en su rango de visión (1 celda) hay una Planta, se mueve hacia ella y la 'consume' (la entidad planta debe ser destruida y removida de la grilla), absorbiendo su energía. Pierde 1 de energía por turno; si llega a 0, muere.\n- **Fauna Invasora (Depredador):** Similar a la presa, pero su objetivo exclusivo es cazar Presas. Pierde 2 de energía por turno.\n\n**Algoritmo Recursivo (Evento Catastrófico):**\n- El usuario puede invocar un 'Incendio' ingresando una coordenada $(x,y)$.\n- Debe implementar una función recursiva de tipo Flood-Fill que propague el fuego. El fuego destruye cualquier Planta adyacente, deteniéndose si encuentra una celda vacía o fauna (que huye automáticamente).\n\n**Entrada/Salida Estándar y Persistencia:**\n- El estado inicial del tablero se carga desde `mapa_semilla.txt` (un archivo de texto con caracteres donde `.` es vacío, `P` es planta, `H` es presa, `D` es depredador).\n- Cada 50 turnos, el sistema debe volcar el estado actual de la grilla en consola usando la sobrecarga del operador `<<` para el objeto `Ecosistema`.\n- Al finalizar la simulación (cuando mueren todos los depredadores o todas las presas), se debe generar `estadisticas_finales.txt` detallando cuántas entidades de cada tipo nacieron y murieron.\n\n### Criterios de Evaluación\n- **Gestión de Punteros en Matrices:** Correcto manejo de `EntidadBiologica***` o `std::vector<std::vector<EntidadBiologica*>>`. Manejo seguro de punteros nulos para representar celdas vacías.\n- **Ciclo de Vida:** Mecanismo seguro para eliminar objetos dinámicos de la matriz durante el turno (evitando dangling pointers).\n- **Lógica Algorítmica:** Precisión en la recursividad del evento catastrófico sin desbordar el stack."
+    }
+  ]
+}
